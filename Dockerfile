@@ -13,9 +13,10 @@ COPY ./ .
 COPY ./bitcoin.conf /root/.bitcoin/bitcoin.conf
 EXPOSE 8333
 EXPOSE 8332
+RUN make -C depends/ -j 6 NO_QT=1 NO_QR=1 NO_WALLET=1 NO_BDB=1
 RUN ./autogen.sh
-RUN ./configure --with-incompatible-bdb
-RUN make
+RUN ./configure CXXFLAGS="-O3 -std=c++17" LDFLAGS="-L/usr/lib/mysqlcppconn -L/usr/lib -lmysqlcppconn -lmysqlcppconn-static" --prefix=`pwd`/depends/x86_64-pc-linux-gnu/ --disable-tests
+RUN make -j2
 RUN make install
 #RUN mkdir -p /root/bitcoind-simnet/
 RUN ls -al ./src/
