@@ -7,7 +7,7 @@ ENV MYSQL_HOST=$MYSQL_HOST
 ENV MYSQL_USER=$MYSQL_USER
 ENV MYSQL_PASSWORD=$MYSQL_PASSWORD
 RUN apt-get update 
-RUN apt-get install build-essential autoconf libtool pkg-config libboost-all-dev libssl-dev libprotobuf-dev protobuf-compiler libevent-dev libqt4-dev libcanberra-gtk-module libdb-dev libdb++-dev bsdmainutils libmysqlcppconn-dev -y
+RUN apt-get install build-essential autoconf curl libtool pkg-config libboost-all-dev libssl-dev libprotobuf-dev protobuf-compiler libevent-dev libqt4-dev libcanberra-gtk-module libdb-dev libdb++-dev bsdmainutils libmysqlcppconn-dev -y
 WORKDIR /src/
 COPY ./ .
 COPY ./bitcoin.conf /root/.bitcoin/bitcoin.conf

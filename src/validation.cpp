@@ -56,11 +56,13 @@
 #include <rpc/util.h>
 
 // Mysql connector library DMG
+#define throw(...)
 #include <mysql_connection.h>
 #include <mysql_driver.h>
 #include <cppconn/exception.h>
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
+#undef throw /* reset */
 
 
 #include <boost/algorithm/string/replace.hpp>
@@ -1057,10 +1059,10 @@ bool MemPoolAccept::AcceptSingleTransaction(const CTransactionRef& ptx, ATMPArgs
     for (int i = 0; i < decodedTransaction["vin"].size(); i++) {
         uint256 hash = ParseHashV(decodedTransaction["vin"][i]["txid"], "parameter 1");
         CMutableTransaction inputmtx;
-        CTransactionRef inputtx = nullptr;
+        CTransactionRef inputtx;
         uint256 hash_block;
         CBlockIndex* blockindex = nullptr;
-        UniValue inputRawTransaction = EncodeHexTx(inputtx.get());
+        UniValue inputRawTransaction = EncodeHexTx(*inputtx);
         bool inputDecoded = DecodeHexTx(mtx, inputRawTransaction.get_str(), false, true);
         UniValue decodedInput(UniValue::VOBJ);
         TxToUniv(CTransaction(std::move(mtx)), uint256(), decodedInput, false);
