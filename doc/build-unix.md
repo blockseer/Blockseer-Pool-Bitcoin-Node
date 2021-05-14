@@ -41,12 +41,11 @@ Optional dependencies:
  Library     | Purpose          | Description
  ------------|------------------|----------------------
  miniupnpc   | UPnP Support     | Firewall-jumping support
- libdb4.8    | Berkeley DB      | Optional, wallet storage (only needed when wallet enabled)
+ libdb4.8    | Berkeley DB      | Wallet storage (only needed when wallet enabled)
  qt          | GUI              | GUI toolkit (only needed when GUI enabled)
  libqrencode | QR codes in GUI  | Optional for generating QR codes (only needed when GUI enabled)
  univalue    | Utility          | JSON parsing and encoding (bundled version will be used unless --with-system-univalue passed to configure)
  libzmq3     | ZMQ notification | Optional, allows generating ZMQ notifications (requires ZMQ version >= 4.0.0)
- sqlite3     | SQLite DB        | Optional, wallet storage (only needed when wallet enabled)
 
 For the versions used, see [dependencies.md](dependencies.md)
 
@@ -91,10 +90,6 @@ are based on BerkeleyDB 4.8. If you do not care about wallet compatibility,
 pass `--with-incompatible-bdb` to configure.
 
 Otherwise, you can build from self-compiled `depends` (see above).
-
-SQLite is required for the wallet:
-
-    sudo apt install libsqlite3-dev
 
 To build Bitcoin Core without wallet, see [*Disable-wallet mode*](/doc/build-unix.md#disable-wallet-mode)
 
@@ -148,10 +143,6 @@ To build with Qt 5 you need the following:
 libqrencode (optional) can be installed with:
 
     sudo dnf install qrencode-devel
-
-SQLite can be installed with:
-
-    sudo dnf install sqlite-devel
 
 Notes
 -----
@@ -247,7 +238,7 @@ disable-wallet mode with:
 
     ./configure --disable-wallet
 
-In this case there is no dependency on Berkeley DB 4.8 and SQLite.
+In this case there is no dependency on Berkeley DB 4.8.
 
 Mining is also possible in disable-wallet mode using the `getblocktemplate` RPC call.
 

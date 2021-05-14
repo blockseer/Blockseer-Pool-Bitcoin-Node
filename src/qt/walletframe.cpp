@@ -3,27 +3,20 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <qt/walletframe.h>
+#include <qt/walletmodel.h>
 
 #include <qt/bitcoingui.h>
-#include <qt/createwalletdialog.h>
-#include <qt/overviewpage.h>
-#include <qt/walletcontroller.h>
-#include <qt/walletmodel.h>
 #include <qt/walletview.h>
 
 #include <cassert>
 
-#include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QPushButton>
-#include <QVBoxLayout>
 
-WalletFrame::WalletFrame(const PlatformStyle* _platformStyle, BitcoinGUI* _gui)
-    : QFrame(_gui),
-      gui(_gui),
-      platformStyle(_platformStyle),
-      m_size_hint(OverviewPage{platformStyle, nullptr}.sizeHint())
+WalletFrame::WalletFrame(const PlatformStyle *_platformStyle, BitcoinGUI *_gui) :
+    QFrame(_gui),
+    gui(_gui),
+    platformStyle(_platformStyle)
 {
     // Leave HBox hook for adding a list view later
     QHBoxLayout *walletFrameLayout = new QHBoxLayout(this);
@@ -32,25 +25,9 @@ WalletFrame::WalletFrame(const PlatformStyle* _platformStyle, BitcoinGUI* _gui)
     walletFrameLayout->setContentsMargins(0,0,0,0);
     walletFrameLayout->addWidget(walletStack);
 
-    // hbox for no wallet
-    QGroupBox* no_wallet_group = new QGroupBox(walletStack);
-    QVBoxLayout* no_wallet_layout = new QVBoxLayout(no_wallet_group);
-
-    QLabel *noWallet = new QLabel(tr("No wallet has been loaded.\nGo to File > Open Wallet to load a wallet.\n- OR -"));
+    QLabel *noWallet = new QLabel(tr("No wallet has been loaded."));
     noWallet->setAlignment(Qt::AlignCenter);
-    no_wallet_layout->addWidget(noWallet, 0, Qt::AlignHCenter | Qt::AlignBottom);
-
-    // A button for create wallet dialog
-    QPushButton* create_wallet_button = new QPushButton(tr("Create a new wallet"), walletStack);
-    connect(create_wallet_button, &QPushButton::clicked, [this] {
-        auto activity = new CreateWalletActivity(gui->getWalletController(), this);
-        connect(activity, &CreateWalletActivity::finished, activity, &QObject::deleteLater);
-        activity->create();
-    });
-    no_wallet_layout->addWidget(create_wallet_button, 0, Qt::AlignHCenter | Qt::AlignTop);
-    no_wallet_group->setLayout(no_wallet_layout);
-
-    walletStack->addWidget(no_wallet_group);
+    walletStack->addWidget(noWallet);
 }
 
 WalletFrame::~WalletFrame()
@@ -76,7 +53,6 @@ bool WalletFrame::addWallet(WalletModel *walletModel)
     walletView->setClientModel(clientModel);
     walletView->setWalletModel(walletModel);
     walletView->showOutOfSyncWarning(bOutOfSync);
-    walletView->setPrivacy(gui->isPrivacyModeActivated());
 
     WalletView* current_wallet_view = currentWalletView();
     if (current_wallet_view) {
@@ -97,7 +73,6 @@ bool WalletFrame::addWallet(WalletModel *walletModel)
     connect(walletView, &WalletView::encryptionStatusChanged, gui, &BitcoinGUI::updateWalletStatus);
     connect(walletView, &WalletView::incomingTransaction, gui, &BitcoinGUI::incomingTransaction);
     connect(walletView, &WalletView::hdEnabledStatusChanged, gui, &BitcoinGUI::updateWalletStatus);
-    connect(gui, &BitcoinGUI::setPrivacy, walletView, &WalletView::setPrivacy);
 
     return true;
 }
@@ -188,19 +163,11 @@ void WalletFrame::gotoVerifyMessageTab(QString addr)
         walletView->gotoVerifyMessageTab(addr);
 }
 
-void WalletFrame::gotoLoadPSBT(bool from_clipboard)
-{
-    WalletView *walletView = currentWalletView();
-    if (walletView) {
-        walletView->gotoLoadPSBT(from_clipboard);
-    }
-}
-
-void WalletFrame::encryptWallet()
+void WalletFrame::encryptWallet(bool status)
 {
     WalletView *walletView = currentWalletView();
     if (walletView)
-        walletView->encryptWallet();
+        walletView->encryptWallet(status);
 }
 
 void WalletFrame::backupWallet()

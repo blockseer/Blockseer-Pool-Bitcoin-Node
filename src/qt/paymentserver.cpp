@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2020 The Bitcoin Core developers
+// Copyright (c) 2011-2019 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -14,9 +14,9 @@
 
 #include <chainparams.h>
 #include <interfaces/node.h>
-#include <key_io.h>
-#include <node/ui_interface.h>
 #include <policy/policy.h>
+#include <key_io.h>
+#include <ui_interface.h>
 #include <util/system.h>
 #include <wallet/wallet.h>
 
@@ -26,6 +26,7 @@
 #include <QApplication>
 #include <QByteArray>
 #include <QDataStream>
+#include <QDateTime>
 #include <QDebug>
 #include <QFile>
 #include <QFileOpenEvent>
@@ -73,7 +74,7 @@ static QSet<QString> savedPaymentRequests;
 // Warning: ipcSendCommandLine() is called early in init,
 // so don't use "Q_EMIT message()", but "QMessageBox::"!
 //
-void PaymentServer::ipcParseCommandLine(int argc, char* argv[])
+void PaymentServer::ipcParseCommandLine(interfaces::Node& node, int argc, char* argv[])
 {
     for (int i = 1; i < argc; i++)
     {
@@ -93,14 +94,14 @@ void PaymentServer::ipcParseCommandLine(int argc, char* argv[])
             SendCoinsRecipient r;
             if (GUIUtil::parseBitcoinURI(arg, &r) && !r.address.isEmpty())
             {
-                auto tempChainParams = CreateChainParams(gArgs, CBaseChainParams::MAIN);
+                auto tempChainParams = CreateChainParams(CBaseChainParams::MAIN);
 
                 if (IsValidDestinationString(r.address.toStdString(), *tempChainParams)) {
-                    SelectParams(CBaseChainParams::MAIN);
+                    node.selectParams(CBaseChainParams::MAIN);
                 } else {
-                    tempChainParams = CreateChainParams(gArgs, CBaseChainParams::TESTNET);
+                    tempChainParams = CreateChainParams(CBaseChainParams::TESTNET);
                     if (IsValidDestinationString(r.address.toStdString(), *tempChainParams)) {
-                        SelectParams(CBaseChainParams::TESTNET);
+                        node.selectParams(CBaseChainParams::TESTNET);
                     }
                 }
             }

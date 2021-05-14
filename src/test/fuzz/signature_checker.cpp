@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2020 The Bitcoin Core developers
+// Copyright (c) 2009-2019 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-void initialize_signature_checker()
+void initialize()
 {
     static const auto verify_handle = MakeUnique<ECCVerifyHandle>();
 }
@@ -24,26 +24,21 @@ class FuzzedSignatureChecker : public BaseSignatureChecker
     FuzzedDataProvider& m_fuzzed_data_provider;
 
 public:
-    explicit FuzzedSignatureChecker(FuzzedDataProvider& fuzzed_data_provider) : m_fuzzed_data_provider(fuzzed_data_provider)
+    FuzzedSignatureChecker(FuzzedDataProvider& fuzzed_data_provider) : m_fuzzed_data_provider(fuzzed_data_provider)
     {
     }
 
-    bool CheckECDSASignature(const std::vector<unsigned char>& scriptSig, const std::vector<unsigned char>& vchPubKey, const CScript& scriptCode, SigVersion sigversion) const override
-    {
-        return m_fuzzed_data_provider.ConsumeBool();
-    }
-
-    bool CheckSchnorrSignature(Span<const unsigned char> sig, Span<const unsigned char> pubkey, SigVersion sigversion, const ScriptExecutionData& execdata, ScriptError* serror = nullptr) const override
+    virtual bool CheckSig(const std::vector<unsigned char>& scriptSig, const std::vector<unsigned char>& vchPubKey, const CScript& scriptCode, SigVersion sigversion) const
     {
         return m_fuzzed_data_provider.ConsumeBool();
     }
 
-    bool CheckLockTime(const CScriptNum& nLockTime) const override
+    virtual bool CheckLockTime(const CScriptNum& nLockTime) const
     {
         return m_fuzzed_data_provider.ConsumeBool();
     }
 
-    bool CheckSequence(const CScriptNum& nSequence) const override
+    virtual bool CheckSequence(const CScriptNum& nSequence) const
     {
         return m_fuzzed_data_provider.ConsumeBool();
     }
@@ -52,7 +47,7 @@ public:
 };
 } // namespace
 
-FUZZ_TARGET_INIT(signature_checker, initialize_signature_checker)
+void test_one_input(const std::vector<uint8_t>& buffer)
 {
     FuzzedDataProvider fuzzed_data_provider(buffer.data(), buffer.size());
     const unsigned int flags = fuzzed_data_provider.ConsumeIntegral<unsigned int>();

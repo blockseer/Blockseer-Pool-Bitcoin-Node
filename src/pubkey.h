@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2020 The Bitcoin Core developers
+// Copyright (c) 2009-2019 The Bitcoin Core developers
 // Copyright (c) 2017 The Zcash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -9,7 +9,6 @@
 
 #include <hash.h>
 #include <serialize.h>
-#include <span.h>
 #include <uint256.h>
 
 #include <stdexcept>
@@ -143,9 +142,6 @@ public:
         unsigned int len = ::ReadCompactSize(s);
         if (len <= SIZE) {
             s.read((char*)vch, len);
-            if (len != size()) {
-                Invalidate();
-            }
         } else {
             // invalid pubkey, skip available data
             char dummy;
@@ -158,28 +154,19 @@ public:
     //! Get the KeyID of this public key (hash of its serialization)
     CKeyID GetID() const
     {
-        return CKeyID(Hash160(MakeSpan(vch).first(size())));
+        return CKeyID(Hash160(vch, vch + size()));
     }
 
     //! Get the 256-bit hash of this public key.
     uint256 GetHash() const
     {
-        return Hash(MakeSpan(vch).first(size()));
+        return Hash(vch, vch + size());
     }
 
     /*
      * Check syntactic correctness.
      *
-     * When setting a pubkey (Set()) or deserializing fails (its header bytes
-     * don't match the length of the data), the size is set to 0. Thus,
-     * by checking size, one can observe whether Set() or deserialization has
-     * failed.
-     *
-     * This does not check for more than that. In particular, it does not verify
-     * that the coordinates correspond to a point on the curve (see IsFullyValid()
-     * for that instead).
-     *
-     * Note that this is consensus critical as CheckECDSASignature() calls it!
+     * Note that this is consensus critical as CheckSig() calls it!
      */
     bool IsValid() const
     {
@@ -216,27 +203,6 @@ public:
     bool Derive(CPubKey& pubkeyChild, ChainCode &ccChild, unsigned int nChild, const ChainCode& cc) const;
 };
 
-class XOnlyPubKey
-{
-private:
-    uint256 m_keydata;
-
-public:
-    /** Construct an x-only pubkey from exactly 32 bytes. */
-    explicit XOnlyPubKey(Span<const unsigned char> bytes);
-
-    /** Verify a Schnorr signature against this public key.
-     *
-     * sigbytes must be exactly 64 bytes.
-     */
-    bool VerifySchnorr(const uint256& msg, Span<const unsigned char> sigbytes) const;
-    bool CheckPayToContract(const XOnlyPubKey& base, const uint256& hash, bool parity) const;
-
-    const unsigned char& operator[](int pos) const { return *(m_keydata.begin() + pos); }
-    const unsigned char* data() const { return m_keydata.begin(); }
-    size_t size() const { return m_keydata.size(); }
-};
-
 struct CExtPubKey {
     unsigned char nDepth;
     unsigned char vchFingerprint[4];
@@ -251,11 +217,6 @@ struct CExtPubKey {
             a.nChild == b.nChild &&
             a.chaincode == b.chaincode &&
             a.pubkey == b.pubkey;
-    }
-
-    friend bool operator!=(const CExtPubKey &a, const CExtPubKey &b)
-    {
-        return !(a == b);
     }
 
     void Encode(unsigned char code[BIP32_EXTKEY_SIZE]) const;

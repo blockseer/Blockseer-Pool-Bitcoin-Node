@@ -89,6 +89,12 @@ example:
 BUILDDIR=$PWD/build contrib/devtools/gen-manpages.sh
 ```
 
+optimize-pngs.py
+================
+
+A script to optimize png files in the bitcoin
+repository (requires pngcrush).
+
 security-check.py and test-security-check.py
 ============================================
 

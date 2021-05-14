@@ -1,16 +1,15 @@
-// Copyright (c) 2018-2020 The Bitcoin Core developers
+// Copyright (c) 2018-2019 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <fs.h>
-#include <util/check.h>
 #include <util/system.h>
 
 #include <wallet/test/init_test_fixture.h>
 
-InitWalletDirTestingSetup::InitWalletDirTestingSetup(const std::string& chainName) : BasicTestingSetup(chainName)
+InitWalletDirTestingSetup::InitWalletDirTestingSetup(const std::string& chainName): BasicTestingSetup(chainName)
 {
-    m_wallet_client = MakeWalletClient(*m_node.chain, *Assert(m_node.args));
+    m_chain_client = MakeWalletClient(*m_chain, {});
 
     std::string sep;
     sep += fs::path::preferred_separator;

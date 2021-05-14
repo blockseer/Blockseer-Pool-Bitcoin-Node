@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2020 The Bitcoin Core developers
+// Copyright (c) 2011-2018 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -46,8 +46,11 @@ public:
 
 public Q_SLOTS:
     void clear();
-    void reject() override;
-    void accept() override;
+    void reject();
+    void accept();
+
+protected:
+    virtual void keyPressEvent(QKeyEvent *event);
 
 private:
     Ui::ReceiveCoinsDialog *ui;
@@ -58,7 +61,7 @@ private:
 
     QModelIndex selectedRow();
     void copyColumnToClipboard(int column);
-    virtual void resizeEvent(QResizeEvent *event) override;
+    virtual void resizeEvent(QResizeEvent *event);
 
 private Q_SLOTS:
     void on_receiveButton_clicked();

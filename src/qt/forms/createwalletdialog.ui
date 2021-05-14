@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>364</width>
-    <height>213</height>
+    <height>185</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>170</y>
+     <y>140</y>
      <width>341</width>
      <height>32</height>
     </rect>
@@ -38,9 +38,6 @@
      <height>24</height>
     </rect>
    </property>
-   <property name="placeholderText">
-     <string>Wallet</string>
-   </property>
   </widget>
   <widget class="QLabel" name="label">
    <property name="geometry">
@@ -60,7 +57,7 @@
     <rect>
      <x>20</x>
      <y>50</y>
-     <width>220</width>
+     <width>171</width>
      <height>22</height>
     </rect>
    </property>
@@ -71,34 +68,18 @@
     <string>Encrypt Wallet</string>
    </property>
    <property name="checked">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QLabel" name="advanced_options_label">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>90</y>
-     <width>220</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">font-weight:bold;</string>
-   </property>
-   <property name="text">
-    <string>Advanced options</string>
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QCheckBox" name="disable_privkeys_checkbox">
    <property name="enabled">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>115</y>
-     <width>220</width>
+     <y>80</y>
+     <width>171</width>
      <height>22</height>
     </rect>
    </property>
@@ -113,8 +94,8 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>135</y>
-     <width>220</width>
+     <y>110</y>
+     <width>171</width>
      <height>22</height>
     </rect>
    </property>
@@ -125,29 +106,12 @@
     <string>Make Blank Wallet</string>
    </property>
   </widget>
-  <widget class="QCheckBox" name="descriptor_checkbox">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>155</y>
-     <width>220</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <property name="toolTip">
-    <string>Use descriptors for scriptPubKey management</string>
-   </property>
-   <property name="text">
-    <string>Descriptor Wallet</string>
-   </property>
-  </widget>
  </widget>
  <tabstops>
   <tabstop>wallet_name_line_edit</tabstop>
   <tabstop>encrypt_wallet_checkbox</tabstop>
   <tabstop>disable_privkeys_checkbox</tabstop>
   <tabstop>blank_wallet_checkbox</tabstop>
-  <tabstop>descriptor_checkbox</tabstop>
  </tabstops>
  <resources/>
  <connections>

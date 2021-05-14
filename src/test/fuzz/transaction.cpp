@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 The Bitcoin Core developers
+// Copyright (c) 2019 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -21,12 +21,12 @@
 
 #include <cassert>
 
-void initialize_transaction()
+void initialize()
 {
     SelectParams(CBaseChainParams::REGTEST);
 }
 
-FUZZ_TARGET_INIT(transaction, initialize_transaction)
+void test_one_input(const std::vector<uint8_t>& buffer)
 {
     CDataStream ds(buffer, SER_NETWORK, INIT_PROTO_VERSION);
     try {
@@ -42,7 +42,7 @@ FUZZ_TARGET_INIT(transaction, initialize_transaction)
             return CTransaction(deserialize, ds);
         } catch (const std::ios_base::failure&) {
             valid_tx = false;
-            return CTransaction{CMutableTransaction{}};
+            return CTransaction();
         }
     }();
     bool valid_mutable_tx = true;
@@ -95,8 +95,7 @@ FUZZ_TARGET_INIT(transaction, initialize_transaction)
 
     CCoinsView coins_view;
     const CCoinsViewCache coins_view_cache(&coins_view);
-    (void)AreInputsStandard(tx, coins_view_cache, false);
-    (void)AreInputsStandard(tx, coins_view_cache, true);
+    (void)AreInputsStandard(tx, coins_view_cache);
     (void)IsWitnessStandard(tx, coins_view_cache);
 
     UniValue u(UniValue::VOBJ);

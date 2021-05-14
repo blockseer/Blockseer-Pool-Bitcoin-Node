@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2020 The Bitcoin Core developers
+// Copyright (c) 2009-2019 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -84,7 +84,7 @@ struct CompareTxIterByAncestorCount {
     {
         if (a->GetCountWithAncestors() != b->GetCountWithAncestors())
             return a->GetCountWithAncestors() < b->GetCountWithAncestors();
-        return CompareIteratorByHash()(a, b);
+        return CTxMemPool::CompareIteratorByHash()(a, b);
     }
 };
 
@@ -128,6 +128,8 @@ class BlockAssembler
 private:
     // The constructed block template
     std::unique_ptr<CBlockTemplate> pblocktemplate;
+    // A convenience pointer that always refers to the CBlock in pblocktemplate
+    CBlock* pblock;
 
     // Configuration parameters for the block size
     bool fIncludeWitness;
@@ -200,8 +202,5 @@ private:
 /** Modify the extranonce in a block */
 void IncrementExtraNonce(CBlock* pblock, const CBlockIndex* pindexPrev, unsigned int& nExtraNonce);
 int64_t UpdateTime(CBlockHeader* pblock, const Consensus::Params& consensusParams, const CBlockIndex* pindexPrev);
-
-/** Update an old GenerateCoinbaseCommitment from CreateNewBlock after the block txs have changed */
-void RegenerateCommitments(CBlock& block);
 
 #endif // BITCOIN_MINER_H

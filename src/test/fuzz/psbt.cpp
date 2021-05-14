@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 The Bitcoin Core developers
+// Copyright (c) 2019 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -17,12 +17,12 @@
 #include <string>
 #include <vector>
 
-void initialize_psbt()
+void initialize()
 {
     static const ECCVerifyHandle verify_handle;
 }
 
-FUZZ_TARGET_INIT(psbt, initialize_psbt)
+void test_one_input(const std::vector<uint8_t>& buffer)
 {
     PartiallySignedTransaction psbt_mut;
     const std::string raw_psbt{buffer.begin(), buffer.end()};
@@ -39,6 +39,7 @@ FUZZ_TARGET_INIT(psbt, initialize_psbt)
     }
 
     (void)psbt.IsNull();
+    (void)psbt.IsSane();
 
     Optional<CMutableTransaction> tx = psbt.tx;
     if (tx) {
@@ -49,6 +50,7 @@ FUZZ_TARGET_INIT(psbt, initialize_psbt)
     for (const PSBTInput& input : psbt.inputs) {
         (void)PSBTInputSigned(input);
         (void)input.IsNull();
+        (void)input.IsSane();
     }
 
     for (const PSBTOutput& output : psbt.outputs) {

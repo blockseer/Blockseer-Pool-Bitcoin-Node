@@ -6,7 +6,6 @@
 #include <config/bitcoin-config.h>
 #endif
 
-#include <chainparams.h>
 #include <fs.h>
 #include <qt/intro.h>
 #include <qt/forms/ui_intro.h>
@@ -182,7 +181,7 @@ void Intro::setDataDirectory(const QString &dataDir)
     }
 }
 
-bool Intro::showIfNeeded(bool& did_show_intro, bool& prune)
+bool Intro::showIfNeeded(interfaces::Node& node, bool& did_show_intro, bool& prune)
 {
     did_show_intro = false;
 
@@ -200,13 +199,13 @@ bool Intro::showIfNeeded(bool& did_show_intro, bool& prune)
     {
         /* Use selectParams here to guarantee Params() can be used by node interface */
         try {
-            SelectParams(gArgs.GetChainName());
+            node.selectParams(gArgs.GetChainName());
         } catch (const std::exception&) {
             return false;
         }
 
         /* If current default data directory does not exist, let the user choose one */
-        Intro intro(0, Params().AssumedBlockchainSize(), Params().AssumedChainStateSize());
+        Intro intro(0, node.getAssumedBlockchainSize(), node.getAssumedChainStateSize());
         intro.setDataDirectory(dataDir);
         intro.setWindowIcon(QIcon(":icons/bitcoin"));
         did_show_intro = true;
@@ -243,7 +242,7 @@ bool Intro::showIfNeeded(bool& did_show_intro, bool& prune)
      * (to be consistent with bitcoind behavior)
      */
     if(dataDir != GUIUtil::getDefaultDataDirectory()) {
-        gArgs.SoftSetArg("-datadir", GUIUtil::qstringToBoostPath(dataDir).string()); // use OS locale for path setting
+        node.softSetArg("-datadir", GUIUtil::qstringToBoostPath(dataDir).string()); // use OS locale for path setting
     }
     return true;
 }

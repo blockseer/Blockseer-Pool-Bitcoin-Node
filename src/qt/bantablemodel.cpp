@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2020 The Bitcoin Core developers
+// Copyright (c) 2011-2019 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,7 +11,6 @@
 
 #include <QDateTime>
 #include <QList>
-#include <QLocale>
 #include <QModelIndex>
 #include <QVariant>
 
@@ -123,7 +122,7 @@ QVariant BanTableModel::data(const QModelIndex &index, int role) const
         case Bantime:
             QDateTime date = QDateTime::fromMSecsSinceEpoch(0);
             date = date.addSecs(rec->banEntry.nBanUntil);
-            return QLocale::system().toString(date, QLocale::LongFormat);
+            return date.toString(Qt::SystemLocaleLongDate);
         }
     }
 

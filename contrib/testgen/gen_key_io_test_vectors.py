@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2012-2020 The Bitcoin Core developers
+# Copyright (c) 2012-2018 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 '''
@@ -15,7 +15,8 @@ import os
 from itertools import islice
 from base58 import b58encode_chk, b58decode_chk, b58chars
 import random
-from segwit_addr import bech32_encode, decode_segwit_address, convertbits, CHARSET
+from binascii import b2a_hex
+from segwit_addr import bech32_encode, decode, convertbits, CHARSET
 
 # key types
 PUBKEY_ADDRESS = 0
@@ -108,7 +109,7 @@ def is_valid(v):
 def is_valid_bech32(v):
     '''Check vector v for bech32 validity'''
     for hrp in ['bc', 'tb', 'bcrt']:
-        if decode_segwit_address(hrp, v) != (None, None):
+        if decode(hrp, v) != (None, None):
             return True
     return False
 
@@ -140,7 +141,9 @@ def gen_valid_vectors():
             rv, payload = valid_vector_generator(template)
             assert is_valid(rv)
             metadata = {x: y for x, y in zip(metadata_keys,template[3]) if y is not None}
-            hexrepr = payload.hex()
+            hexrepr = b2a_hex(payload)
+            if isinstance(hexrepr, bytes):
+                hexrepr = hexrepr.decode('utf8')
             yield (rv, hexrepr, metadata)
 
 def gen_invalid_base58_vector(template):
